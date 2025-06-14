@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(
@@ -18,14 +18,20 @@ app.use(
 );
 app.use(bodyParser.json());
 
+if (!process.env.MONGODB_URI) {
+  console.error('MONGODB_URI is not set');
+  process.exit(1);
+}
+
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ethos')
+  .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB');
   })
   .catch((error) => {
     console.error('Error connecting to MongoDB:', error);
+    process.exit(1);
   });
 
 // Routes
